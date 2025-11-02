@@ -64,7 +64,7 @@ const PortalContent = () => {
     // Always include demo issues first
     return [...DEMO_ISSUES, ...userReports];
   });
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [showReportModal, setShowReportModal] = useState(false);
   const mapRef = useRef(null);
@@ -162,9 +162,6 @@ const PortalContent = () => {
         window.removeEventListener("resize", handleResize);
       };
     }
-
-    // Mark loading as complete
-    setLoading(false);
   }, []);
 
   // Persist issues to localStorage whenever they change
