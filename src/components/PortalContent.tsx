@@ -173,8 +173,7 @@ const PortalContent = () => {
   }, [issues]);
 
   // Always show all issues (demo + user reports)
-  const allIssues = issues.length === 0 ? DEMO_ISSUES : 
-    [...DEMO_ISSUES.filter(d => !issues.some(i => i.id === d.id)), ...issues.filter(i => !i.id.startsWith("demo-"))];
+  const allIssues = issues;
 
   // Filter issues by status
   const filteredIssues = statusFilter === "all" 

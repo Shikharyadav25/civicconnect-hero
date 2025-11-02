@@ -107,13 +107,16 @@ All colors MUST be HSL.
 @layer base {
   * {
     @apply border-border;
+    font-family: 'Rajdhani', sans-serif;
   }
 
   body {
     @apply bg-background text-foreground;
+    font-family: 'Rajdhani', sans-serif;
   }
   
   html {
     scroll-behavior: smooth;
+    font-family: 'Rajdhani', sans-serif;
   }
 }
