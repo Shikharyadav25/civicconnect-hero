@@ -69,21 +69,31 @@ const PortalContent = () => {
 
   // Update issues when authentication state changes or auth finishes loading
   useEffect(() => {
+    console.log("🔄 Auth state changed - isAuthenticated:", isAuthenticated, "user:", user);
+    
     if (!isAuthenticated) {
       // When logged out, show only demo issues
       setIssues([...DEMO_ISSUES]);
-      console.log("📋 Logged out - showing only demo issues");
+      console.log("📋 Logged out - showing only 3 demo issues");
     } else {
       // When logged in, show demo + user reports from localStorage
       const saved = localStorage.getItem("civicconnect_issues");
+      console.log("📂 Raw localStorage data:", saved);
+      console.log("📂 Parsed localStorage data:", saved ? JSON.parse(saved) : "null or undefined");
+      
       let userReports = [];
       try {
-        userReports = saved ? JSON.parse(saved).filter((issue: any) => !issue.id.startsWith("demo-")) : [];
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          console.log("✔️ Successfully parsed:", parsed);
+          userReports = parsed.filter((issue: any) => !issue.id.startsWith("demo-")) || [];
+        }
       } catch (e) {
-        console.error("Error parsing stored issues:", e);
+        console.error("❌ Error parsing stored issues:", e);
         userReports = [];
       }
       const allIssues = [...DEMO_ISSUES, ...userReports];
+      console.log("📊 Final issues to set:", allIssues.length, allIssues.map((i: any) => ({ id: i.id, title: i.title })));
       setIssues(allIssues);
       console.log(`✅ Logged in - loaded ${userReports.length} user reports + 3 demo issues`);
     }
@@ -196,11 +206,26 @@ const PortalContent = () => {
 
   // Persist ONLY user-reported issues to localStorage (not demo issues)
   useEffect(() => {
+    if (!isAuthenticated) {
+      // Don't save anything when logged out
+      return;
+    }
+    
     // Filter out demo issues before saving
     const userIssues = issues.filter((issue: any) => !issue.id.startsWith("demo-"));
-    localStorage.setItem("civicconnect_issues", JSON.stringify(userIssues));
-    console.log(`💾 Saved ${userIssues.length} user issues to localStorage`);
-  }, [issues]);
+    console.log("🔍 All issues in state:", issues.length, issues.map((i: any) => ({ id: i.id, title: i.title })));
+    console.log("🔍 Filtered user issues:", userIssues.length, userIssues.map((i: any) => ({ id: i.id, title: i.title })));
+    
+    if (userIssues.length === 0) {
+      // Clear localStorage if no user issues
+      localStorage.removeItem("civicconnect_issues");
+      console.log("🧹 Cleared localStorage (no user issues)");
+    } else {
+      // Save user issues
+      localStorage.setItem("civicconnect_issues", JSON.stringify(userIssues));
+      console.log(`💾 Saved ${userIssues.length} user issues to localStorage`);
+    }
+  }, [issues, isAuthenticated]);
 
   // Always show all issues (demo + user reports)
   const allIssues = issues;
@@ -255,6 +280,9 @@ const PortalContent = () => {
     address?: string;
   }) => {
     try {
+      console.log("👤 Current user:", user);
+      console.log("🔐 Is authenticated:", isAuthenticated);
+      
       // Create new issue object
       const newIssue = {
         id: `issue-${Date.now()}`,
