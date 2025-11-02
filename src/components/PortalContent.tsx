@@ -17,10 +17,10 @@ const DEMO_ISSUES = [
   {
     id: "demo-1",
     userId: "demo",
-    userName: "John Smith",
-    title: "Large Pothole on Main Road",
+    userName: "Rajesh Kumar",
+    title: "Road Damage - Connaught Place",
     category: "pothole",
-    description: "A dangerous pothole near the intersection that needs immediate repair.",
+    description: "Large crater-sized pothole on CP road causing traffic congestion. Needs immediate attention.",
     status: "reported",
     createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
     upvotes: 12,
@@ -29,10 +29,10 @@ const DEMO_ISSUES = [
   {
     id: "demo-2",
     userId: "demo",
-    userName: "Sarah Johnson",
-    title: "Traffic Light Not Working",
+    userName: "Priya Singh",
+    title: "Signal Malfunction - Kasturba Nagar",
     category: "traffic",
-    description: "Traffic light at the main junction is stuck on red.",
+    description: "Traffic signal at Kasturba Nagar junction is malfunctioning. Causing traffic problems.",
     status: "inProgress",
     createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
     upvotes: 8,
@@ -41,10 +41,10 @@ const DEMO_ISSUES = [
   {
     id: "demo-3",
     userId: "demo",
-    userName: "Mike Williams",
-    title: "Street Light Fixed",
+    userName: "Amit Patel",
+    title: "Street Light Repaired - Greater Kailash",
     category: "streetLight",
-    description: "Street light that was broken has been successfully repaired.",
+    description: "Broken street light at Greater Kailash has been successfully repaired by municipal team.",
     status: "resolved",
     createdAt: new Date(Date.now() - 3 * 60 * 60 * 1000),
     upvotes: 5,
@@ -53,22 +53,41 @@ const DEMO_ISSUES = [
 ];
 
 const PortalContent = () => {
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, isLoading: authLoading } = useAuth();
   const [isAdmin, setIsAdmin] = useState(false);
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [selectedIssueForEdit, setSelectedIssueForEdit] = useState<any>(null);
   const [issues, setIssues] = useState<any[]>(() => {
-    // Load issues from localStorage on initial render
-    const saved = localStorage.getItem("civicconnect_issues");
-    const userReports = saved ? JSON.parse(saved).filter((issue: any) => !issue.id.startsWith("demo-")) : [];
-    // Always include demo issues first
-    return [...DEMO_ISSUES, ...userReports];
+    // Always start with demo issues
+    return [...DEMO_ISSUES];
   });
   const [loading, setLoading] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [showReportModal, setShowReportModal] = useState(false);
   const mapRef = useRef(null);
   const isDarkMode = document.documentElement.classList.contains("dark");
+
+  // Update issues when authentication state changes or auth finishes loading
+  useEffect(() => {
+    if (!isAuthenticated) {
+      // When logged out, show only demo issues
+      setIssues([...DEMO_ISSUES]);
+      console.log("📋 Logged out - showing only demo issues");
+    } else {
+      // When logged in, show demo + user reports from localStorage
+      const saved = localStorage.getItem("civicconnect_issues");
+      let userReports = [];
+      try {
+        userReports = saved ? JSON.parse(saved).filter((issue: any) => !issue.id.startsWith("demo-")) : [];
+      } catch (e) {
+        console.error("Error parsing stored issues:", e);
+        userReports = [];
+      }
+      const allIssues = [...DEMO_ISSUES, ...userReports];
+      setIssues(allIssues);
+      console.log(`✅ Logged in - loaded ${userReports.length} user reports + 3 demo issues`);
+    }
+  }, [isAuthenticated]);
 
   useEffect(() => {
     // Initialize Leaflet map
@@ -175,9 +194,12 @@ const PortalContent = () => {
     }
   }, []);
 
-  // Persist issues to localStorage whenever they change
+  // Persist ONLY user-reported issues to localStorage (not demo issues)
   useEffect(() => {
-    localStorage.setItem("civicconnect_issues", JSON.stringify(issues));
+    // Filter out demo issues before saving
+    const userIssues = issues.filter((issue: any) => !issue.id.startsWith("demo-"));
+    localStorage.setItem("civicconnect_issues", JSON.stringify(userIssues));
+    console.log(`💾 Saved ${userIssues.length} user issues to localStorage`);
   }, [issues]);
 
   // Always show all issues (demo + user reports)
