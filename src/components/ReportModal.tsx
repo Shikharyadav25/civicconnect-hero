@@ -15,6 +15,7 @@ interface ReportModalProps {
     latitude: number;
     longitude: number;
     address?: string;
+    image?: File | null;
   }) => Promise<void>;
 }
 
@@ -24,6 +25,7 @@ const ReportModal = ({ isOpen, onClose, latitude = 28.7041, longitude = 77.1025,
   const [category, setCategory] = useState<IssueCategory>("other");
   const [description, setDescription] = useState("");
   const [address, setAddress] = useState("");
+  const [image, setImage] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
@@ -93,6 +95,7 @@ const ReportModal = ({ isOpen, onClose, latitude = 28.7041, longitude = 77.1025,
         latitude,
         longitude,
         address,
+        image,
       });
       
       setSuccess(true);
@@ -100,6 +103,7 @@ const ReportModal = ({ isOpen, onClose, latitude = 28.7041, longitude = 77.1025,
       setCategory("other");
       setDescription("");
       setAddress("");
+      setImage(null);
       
       setTimeout(() => {
         setSuccess(false);
@@ -200,6 +204,19 @@ const ReportModal = ({ isOpen, onClose, latitude = 28.7041, longitude = 77.1025,
               placeholder="Describe the issue in detail"
               rows={4}
               className="w-full rounded-lg border border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-800 dark:text-white p-2 disabled:opacity-50 resize-none"
+            />
+          </div>
+          
+          {/* Image Upload */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Image
+            </label>
+            <input
+              type="file"
+              onChange={(e) => setImage(e.target.files ? e.target.files[0] : null)}
+              disabled={isLoading}
+              className="w-full rounded-lg border border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-800 dark:text-white p-2 disabled:opacity-50"
             />
           </div>
 

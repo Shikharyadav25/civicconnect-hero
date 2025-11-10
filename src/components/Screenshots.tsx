@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import screenshotMap from "@/assets/screenshot-map.jpg";
-import screenshotForm from "@/assets/screenshot-form.jpg";
-import screenshotDashboard from "@/assets/screenshot-dashboard.jpg";
+import screenshotMap from "@/assets/Map.png";
+import screenshotForm from "@/assets/Form.jpg";
+import screenshotDashboard from "@/assets/Dashboard.jpg";
 
 const screenshots = [
   {

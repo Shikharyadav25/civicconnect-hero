@@ -10,6 +10,8 @@ import {
   onAuthStateChanged,
   User,
 } from "firebase/auth";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyDARQng2ONq4JqWRcosehoC3uy2ldcHLEw",
@@ -29,6 +31,12 @@ const analytics = getAnalytics(app);
 
 // Initialize Firebase Authentication
 export const auth = getAuth(app);
+
+// Initialize Firebase Storage
+export const storage = getStorage(app);
+
+// Initialize Firestore
+export const db = getFirestore(app);
 
 // Configure Google Auth Provider
 const googleProvider = new GoogleAuthProvider();
@@ -80,6 +88,13 @@ export const logout = async () => {
 // Auth State Observer
 export const onAuthChange = (callback: (user: User | null) => void) => {
   return onAuthStateChanged(auth, callback);
+};
+
+// Image Upload
+export const uploadImage = async (image: File, path: string): Promise<string> => {
+  const storageRef = ref(storage, path);
+  await uploadBytes(storageRef, image);
+  return getDownloadURL(storageRef);
 };
 
 export default app;
