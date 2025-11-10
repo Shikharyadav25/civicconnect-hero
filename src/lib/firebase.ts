@@ -1,4 +1,5 @@
 import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
 import {
   getAuth,
   signInWithEmailAndPassword,
@@ -11,17 +12,20 @@ import {
 } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "",
-  authDomain: "civicconnect-51b29.firebaseapp.com",
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "",
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "",
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "",
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || "",
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyDARQng2ONq4JqWRcosehoC3uy2ldcHLEw",
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "civic-connect-2a466.firebaseapp.com",
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "civic-connect-2a466",
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "civic-connect-2a466.firebasestorage.app",
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "109080658195",
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:109080658195:web:6ec7b3e7a8284218311ae6",
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "G-HEMWTTTRM8",
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
+
+// Initialize Firebase Analytics
+const analytics = getAnalytics(app);
 
 // Initialize Firebase Authentication
 export const auth = getAuth(app);
